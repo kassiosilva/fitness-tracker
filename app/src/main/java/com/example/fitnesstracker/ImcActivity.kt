@@ -1,12 +1,14 @@
 package com.example.fitnesstracker
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.StringRes
+import androidx.appcompat.app.AlertDialog
 
 class ImcActivity : AppCompatActivity() {
     private lateinit var editWeight: EditText
@@ -32,7 +34,16 @@ class ImcActivity : AppCompatActivity() {
             val resultImc = calculateImc(weight, height)
 
             val imcResponseId = imcResponse(resultImc)
-            Toast.makeText(this, imcResponseId, Toast.LENGTH_SHORT).show()
+
+            AlertDialog.Builder(this)
+                .setTitle(getString(R.string.imc_response, resultImc))
+                .setMessage(imcResponseId)
+                .setPositiveButton(android.R.string.ok) { dialog, whick -> }
+                .create()
+                .show()
+
+            val service = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            service.hideSoftInputFromWindow(currentFocus?.windowToken, 0)
         }
     }
 
