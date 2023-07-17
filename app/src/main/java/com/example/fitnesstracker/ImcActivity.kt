@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.InputMethodManager
@@ -21,6 +22,8 @@ class ImcActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_imc)
+
+        val id = intent?.extras?.getInt("id")
 
         editWeight = findViewById(R.id.edit_imc_weight)
         editHeight = findViewById(R.id.edit_imc_height)
@@ -47,7 +50,12 @@ class ImcActivity : AppCompatActivity() {
                     Thread {
                         val app = application as App
                         val dao = app.database.calcDao()
-                        dao.insert(Calc(type = "imc", res = resultImc))
+
+                        if (id != null) {
+                            dao.update(Calc(id = id, type = "imc", res = resultImc))
+                        } else {
+                            dao.insert(Calc(type = "imc", res = resultImc))
+                        }
 
                         runOnUiThread {
                             openListActivity()
@@ -69,7 +77,6 @@ class ImcActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_search) {
-            finish()
             openListActivity()
         }
 
@@ -77,6 +84,7 @@ class ImcActivity : AppCompatActivity() {
     }
 
     private fun openListActivity() {
+        finish()
         val intent = Intent(this, ListCalcActivity::class.java)
         intent.putExtra("type", "imc")
         startActivity(intent)
@@ -102,11 +110,12 @@ class ImcActivity : AppCompatActivity() {
 
     private fun validate(): Boolean {
         val hasValueFields =
-            editWeight.text.toString().isNotEmpty() && editHeight.text.toString().isNotEmpty()
+            editWeight.text.toString().isNotEmpty() &&
+            editHeight.text.toString().isNotEmpty()
 
         val hasBeginningZero =
-            !editWeight.text.toString().startsWith("0") && !editHeight.text.toString()
-                .startsWith("0")
+            !editWeight.text.toString().startsWith("0") &&
+            !editHeight.text.toString().startsWith("0")
 
         return hasValueFields && hasBeginningZero
     }

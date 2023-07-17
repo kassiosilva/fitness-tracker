@@ -48,7 +48,6 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this@MainActivity, TmbActivity::class.java))
                 }
             }
-            Log.i("Teste", "clicou $id !!!")
         }
 
         recyclerMain = findViewById(R.id.recycler_main)

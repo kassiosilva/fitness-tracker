@@ -25,6 +25,8 @@ class TmbActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tmb)
 
+        val id = intent?.extras?.getInt("id")
+
         editWeight = findViewById(R.id.edit_tmb_weight)
         editHeight = findViewById(R.id.edit_tmb_height)
         editAge = findViewById(R.id.edit_tmb_age)
@@ -61,6 +63,12 @@ class TmbActivity : AppCompatActivity() {
                         val dao = app.database.calcDao()
                         dao.insert(Calc(type = "tmb", res = response))
 
+                        if (id != null) {
+                            dao.update(Calc(id = id, type = "imc", res = response))
+                        } else {
+                            dao.insert(Calc(type = "imc", res = response))
+                        }
+
                         runOnUiThread {
                             openListActivity()
                         }
@@ -81,7 +89,6 @@ class TmbActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.menu_search) {
-            finish()
             openListActivity()
         }
 
@@ -89,6 +96,7 @@ class TmbActivity : AppCompatActivity() {
     }
 
     private fun openListActivity() {
+        finish()
         val intent = Intent(this, ListCalcActivity::class.java)
         intent.putExtra("type", "tmb")
         startActivity(intent)
